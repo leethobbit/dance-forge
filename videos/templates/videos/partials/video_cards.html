@@ -1,0 +1,33 @@
+{% for video in videos %}
+<div class="col">
+  <div class="card h-100">
+    <a href="{% url 'video_detail' video.pk %}" class="text-decoration-none">
+      {% if video.thumbnail %}
+      <img src="{{ video.thumbnail.url }}" class="card-img-top" alt="{{ video.title }}">
+      {% else %}
+      <div class="bg-light d-flex justify-content-center align-items-center" style="height: 180px;">
+        <i class="fas fa-video fa-3x text-secondary"></i>
+      </div>
+      {% endif %}
+      <div class="card-body">
+        <h5 class="card-title text-dark">{{ video.title }}</h5>
+        <p class="card-text text-muted">{{ video.owner.username }}</p>
+        <p class="card-text text-muted">
+          <small>
+            {{ video.view_count }} views • {{ video.created_at|timesince }} ago
+          </small>
+        </p>
+      </div>
+    </a>
+  </div>
+</div>
+{% empty %}
+<div class="col-12 text-center my-5">
+  <h3>No videos found</h3>
+  {% if user.is_authenticated %}
+  <p>Be the first to <a href="{% url 'video_create' %}">upload a video</a>!</p>
+  {% else %}
+  <p>Please <a href="#">sign in</a> to upload videos.</p>
+  {% endif %}
+</div>
+{% endfor %} 

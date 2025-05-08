@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Videos{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Videos</h1>
+    {% if user.is_authenticated %}
+    <a href="{% url 'video_create' %}" class="btn btn-primary">Upload Video</a>
+    {% endif %}
+  </div>
+
+  <div id="video-list" class="row row-cols-1 row-cols-md-3 g-4">
+    {% include 'videos/partials/video_cards.html' %}
+  </div>
+
+  {% if page_obj.has_next %}
+  <div class="d-flex justify-content-center mt-4">
+    <button 
+      class="btn btn-outline-primary"
+      hx-get="{% url 'video_list' %}?page={{ page_obj.next_page_number }}"
+      hx-target="#video-list"
+      hx-swap="beforeend"
+      hx-trigger="click"
+    >
+      Load More
+    </button>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/htmx.org@1.9.2"></script>
+{% endblock %} 
