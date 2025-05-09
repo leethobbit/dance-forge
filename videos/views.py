@@ -20,6 +20,7 @@ from django.views.generic import DetailView
 from django.views.generic import ListView
 from django.views.generic import UpdateView
 
+from .models import Playlist
 from .models import Video
 from .models import WatchHistory
 
@@ -77,6 +78,17 @@ class VideoDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return Video.objects.filter(owner=self.request.user)
+
+
+class PlaylistCreateView(LoginRequiredMixin, CreateView):
+    model = Playlist
+    fields = ["name", "description", "is_public"]
+    template_name = "videos/playlist_form.html"
+    success_url = reverse_lazy("video_list")  # Redirect to videos list after creation
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
 
 
 def range_re_pattern():

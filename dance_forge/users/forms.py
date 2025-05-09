@@ -1,5 +1,6 @@
 from allauth.account.forms import SignupForm
 from allauth.socialaccount.forms import SignupForm as SocialSignupForm
+from django import forms
 from django.contrib.auth import forms as admin_forms
 from django.utils.translation import gettext_lazy as _
 
@@ -31,6 +32,24 @@ class UserSignupForm(SignupForm):
     Check UserSocialSignupForm for accounts created from social.
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Set email as not required if it exists
+        if "email" in self.fields:
+            self.fields["email"].required = False
+        else:
+            # Add email field if it doesn't exist
+            self.fields["email"] = forms.EmailField(
+                label=_("Email (optional)"), required=False, widget=forms.EmailInput()
+            )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        # If email is missing from cleaned_data, set it to empty string
+        if "email" not in cleaned_data:
+            cleaned_data["email"] = ""
+        return cleaned_data
+
 
 class UserSocialSignupForm(SocialSignupForm):
     """
@@ -38,3 +57,21 @@ class UserSocialSignupForm(SocialSignupForm):
     Default fields will be added automatically.
     See UserSignupForm otherwise.
     """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Set email as not required if it exists
+        if "email" in self.fields:
+            self.fields["email"].required = False
+        else:
+            # Add email field if it doesn't exist
+            self.fields["email"] = forms.EmailField(
+                label=_("Email (optional)"), required=False, widget=forms.EmailInput()
+            )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        # If email is missing from cleaned_data, set it to empty string
+        if "email" not in cleaned_data:
+            cleaned_data["email"] = ""
+        return cleaned_data

@@ -20,7 +20,7 @@ urlpatterns = [
     path("users/", include("dance_forge.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
-    # ...
+    path("videos/", include("videos.urls")),  # Include videos app URLs
     # Media files
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]

@@ -18,4 +18,8 @@ urlpatterns = [
     path(
         "video/<int:pk>/delete/", views.VideoDeleteView.as_view(), name="video_delete"
     ),
+    # Playlist URLs
+    path(
+        "playlist/create/", views.PlaylistCreateView.as_view(), name="playlist_create"
+    ),
 ]

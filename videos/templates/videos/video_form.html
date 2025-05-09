@@ -67,8 +67,7 @@
             <div class="d-flex justify-content-between">
               <a href="{% if form.instance.pk %}{% url 'video_detail' form.instance.pk %}{% else %}{% url 'video_list' %}{% endif %}"
                 class="btn btn-outline-secondary">Cancel</a>
-              <button type="submit" class="btn btn-primary">{% if form.instance.pk %}Save Changes{% else %}Upload{%
-                endif %}</button>
+              <button type="submit" class="btn btn-primary">{% if form.instance.pk %}Save Changes{% else %}Upload{% endif %}</button>
             </div>
           </form>
         </div>
