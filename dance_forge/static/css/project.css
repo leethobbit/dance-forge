@@ -105,13 +105,31 @@ body {
   color: #fff;
 }
 
+/* Heading styles */
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
+  color: #f773ea;
+  /* Bright neon pink */
+  text-shadow: 0 0 10px rgba(247, 115, 234, 0.7),
+    0 0 15px rgba(247, 115, 234, 0.5),
+    0 0 20px rgba(247, 115, 234, 0.3);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Secondary headings */
+h3,
+h4,
+h5,
+h6 {
   color: #a991f7;
+  /* Keeping purple for secondary headings */
+  text-shadow: 0 0 8px rgba(169, 145, 247, 0.7),
+    0 0 12px rgba(169, 145, 247, 0.5);
 }
 
 /* Improve card text readability */
