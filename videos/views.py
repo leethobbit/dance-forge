@@ -1,15 +1,22 @@
 import mimetypes
 import os
 import re
+import subprocess
+import tempfile
+import uuid
+from pathlib import Path
 from wsgiref.util import FileWrapper
 
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.core.files.base import ContentFile
 from django.http import HttpResponse
 from django.http import HttpResponseNotModified
 from django.http import JsonResponse
 from django.http import StreamingHttpResponse
 from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -30,6 +37,20 @@ class VideoListView(ListView):
     template_name = "videos/video_list.html"
     context_object_name = "videos"
     paginate_by = 12
+
+
+class PlaylistListView(ListView):
+    model = Playlist
+    template_name = "videos/playlist_list.html"
+    context_object_name = "playlists"
+    paginate_by = 12
+
+    def get_queryset(self):
+        """Return public playlists and user's own playlists."""
+        queryset = Playlist.objects.filter(is_public=True)
+        if self.request.user.is_authenticated:
+            queryset = queryset | Playlist.objects.filter(owner=self.request.user)
+        return queryset.distinct().order_by("-created_at")
 
 
 class VideoDetailView(DetailView):
@@ -59,7 +80,81 @@ class VideoCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
+        # Check if a thumbnail was provided
+        if not form.cleaned_data.get("thumbnail") and form.cleaned_data.get("file"):
+            # Generate thumbnail from the first frame
+            video_file = form.cleaned_data["file"]
+            thumbnail = self.generate_thumbnail(video_file)
+            if thumbnail:
+                form.instance.thumbnail = thumbnail
         return super().form_valid(form)
+
+    def generate_thumbnail(self, video_file):
+        """Generate a thumbnail from a frame 5 seconds into the video."""
+        # Create a unique temporary file
+        temp_dir = tempfile.gettempdir()
+        temp_video_path = os.path.join(temp_dir, f"{uuid.uuid4()}.mp4")
+        temp_thumb_path = os.path.join(temp_dir, f"{uuid.uuid4()}.jpg")
+
+        # Save the uploaded file temporarily
+        with open(temp_video_path, "wb+") as destination:
+            for chunk in video_file.chunks():
+                destination.write(chunk)
+
+        try:
+            # Use FFmpeg to extract a frame from 5 seconds into the video
+            cmd = [
+                "ffmpeg",
+                "-i",
+                temp_video_path,
+                "-vframes",
+                "1",
+                "-an",
+                "-ss",
+                "5",  # 5 seconds into the video
+                "-y",
+                temp_thumb_path,
+            ]
+            subprocess.run(cmd, check=True, capture_output=True)
+
+            # If video is shorter than 5 seconds, try again with a frame from 1 second
+            if (
+                not os.path.exists(temp_thumb_path)
+                or os.path.getsize(temp_thumb_path) == 0
+            ):
+                cmd[7] = "1"  # Change to 1 second
+                subprocess.run(cmd, check=True, capture_output=True)
+
+                # If still no thumbnail, use the first frame
+                if (
+                    not os.path.exists(temp_thumb_path)
+                    or os.path.getsize(temp_thumb_path) == 0
+                ):
+                    cmd[7] = "0"  # Use the first frame
+                    subprocess.run(cmd, check=True, capture_output=True)
+
+            # Read the generated thumbnail
+            if os.path.exists(temp_thumb_path) and os.path.getsize(temp_thumb_path) > 0:
+                with open(temp_thumb_path, "rb") as f:
+                    thumbnail_content = f.read()
+
+                # Create a Django ContentFile from the image data
+                filename = f"{Path(video_file.name).stem}_thumbnail.jpg"
+                thumbnail = ContentFile(thumbnail_content, name=filename)
+                return thumbnail
+
+        except Exception as e:
+            # Log the error in a production environment
+            print(f"Error generating thumbnail: {e}")
+
+        finally:
+            # Clean up temporary files
+            if os.path.exists(temp_video_path):
+                os.remove(temp_video_path)
+            if os.path.exists(temp_thumb_path):
+                os.remove(temp_thumb_path)
+
+        return None
 
 
 class VideoUpdateView(LoginRequiredMixin, UpdateView):
@@ -181,3 +276,67 @@ def update_watch_position(request, pk):
         watch_history.save(update_fields=["position", "watched_at"])
 
     return HttpResponse(status=204)
+
+
+@require_GET
+def partials_video_list(request):
+    """
+    Renders just the video list content without the navigation for HTMX requests.
+    For direct browser requests, redirects to the full-page version.
+    """
+    video_list_view = VideoListView.as_view()
+    response = video_list_view(request)
+
+    # Check if it's an HTMX request
+    if request.headers.get("HX-Request"):
+        # For pagination ("Load More" button), only return the new items
+        if (
+            request.headers.get("HX-Trigger") == "load-more-btn"
+            and "page" in request.GET
+        ):
+            return render(
+                request,
+                "videos/partials/video_cards.html",
+                response.context_data if hasattr(response, "context_data") else {},
+            )
+        # Otherwise return the full content for the main area
+        return render(
+            request,
+            "videos/partials/video_list_content.html",
+            response.context_data if hasattr(response, "context_data") else {},
+        )
+    else:
+        # Redirect to the full-page version for direct browser requests
+        return redirect("video_list")
+
+
+@require_GET
+def partials_playlist_list(request):
+    """
+    Renders just the playlist list content without the navigation for HTMX requests.
+    For direct browser requests, redirects to the full-page version.
+    """
+    playlist_list_view = PlaylistListView.as_view()
+    response = playlist_list_view(request)
+
+    # Check if it's an HTMX request
+    if request.headers.get("HX-Request"):
+        # For pagination ("Load More" button), only return the new items
+        if (
+            request.headers.get("HX-Trigger") == "load-more-btn"
+            and "page" in request.GET
+        ):
+            return render(
+                request,
+                "videos/partials/playlist_cards.html",
+                response.context_data if hasattr(response, "context_data") else {},
+            )
+        # Otherwise return the full content for the main area
+        return render(
+            request,
+            "videos/partials/playlist_list_content.html",
+            response.context_data if hasattr(response, "context_data") else {},
+        )
+    else:
+        # Redirect to the full-page version for direct browser requests
+        return redirect("playlist_list")

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Playlists{% endblock %}
+
+{% block content %}
+{% include 'videos/partials/playlist_list_content.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/htmx.org@1.9.2"></script>
+{% endblock %} 

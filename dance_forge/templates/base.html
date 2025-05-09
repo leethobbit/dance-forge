@@ -16,10 +16,14 @@
         content="Dan King" />
   <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}" />
   {% block css %}
-    <!-- Latest compiled and minified Bootstrap CSS -->
+    <!-- Bootswatch Neon Theme for Bootstrap -->
     <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css"
-          integrity="sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA=="
+          href="https://cdn.jsdelivr.net/npm/bootswatch@5.2.3/dist/vapor/bootstrap.min.css"
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
           crossorigin="anonymous"
           referrerpolicy="no-referrer" />
 <!-- Your stuff: Third-party CSS libraries go here -->
@@ -58,7 +62,7 @@
 <body class="{% block bodyclass %}{% endblock bodyclass %}" hx-boost="true">
   {% block body %}
   <div class="mb-1">
-    <nav class="navbar navbar-expand-md navbar-light bg-light">
+    <nav class="navbar navbar-expand-md navbar-dark bg-primary">
       <div class="container-fluid">
         <button class="navbar-toggler navbar-toggler-right"
                 type="button"
@@ -69,52 +73,78 @@
                 aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="{% url 'home' %}" hx-boost="true">Dance Forge</a>
+        <a class="navbar-brand" href="{% url 'home' %}" hx-boost="true">
+          <i class="fas fa-video me-2"></i>Dance Forge
+        </a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto">
+          <ul class="navbar-nav me-auto">
             <li class="nav-item">
               <a class="nav-link" 
                  href="{% url 'home' %}" 
-                 hx-get="{% url 'home' %}" 
+                 hx-get="{% url 'partials_home' %}" 
                  hx-push-url="true" 
                  hx-target="#main-content" 
-                 hx-swap="innerHTML">Home</a>
+                 hx-swap="innerHTML">
+                 <i class="fas fa-home me-1"></i>Home
+              </a>
             </li>
             <li class="nav-item">
               <a class="nav-link" 
                  href="{% url 'video_list' %}" 
-                 hx-get="{% url 'video_list' %}" 
+                 hx-get="{% url 'partials_video_list' %}" 
                  hx-push-url="true" 
                  hx-target="#main-content" 
-                 hx-swap="innerHTML">Videos</a>
+                 hx-swap="innerHTML">
+                 <i class="fas fa-film me-1"></i>Videos
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" 
+                 href="{% url 'playlist_list' %}" 
+                 hx-get="{% url 'partials_playlist_list' %}" 
+                 hx-push-url="true" 
+                 hx-target="#main-content" 
+                 hx-swap="innerHTML">
+                 <i class="fas fa-list me-1"></i>Playlists
+              </a>
             </li>
             <li class="nav-item">
               <a class="nav-link" 
                  href="{% url 'about' %}" 
-                 hx-get="{% url 'about' %}" 
+                 hx-get="{% url 'partials_about' %}" 
                  hx-push-url="true" 
                  hx-target="#main-content" 
-                 hx-swap="innerHTML">About</a>
+                 hx-swap="innerHTML">
+                 <i class="fas fa-info-circle me-1"></i>About
+              </a>
             </li>
             {% if request.user.is_authenticated %}
               <li class="nav-item">
                 <a class="nav-link"
-                   href="{% url 'users:detail' request.user.username %}">{% translate "My Profile" %}</a>
+                   href="{% url 'users:detail' request.user.username %}">
+                   <i class="fas fa-user me-1"></i>{% translate "My Profile" %}
+                </a>
               </li>
               <li class="nav-item">
                 {# URL provided by django-allauth/account/urls.py #}
-                <a class="nav-link" href="{% url 'account_logout' %}">{% translate "Sign Out" %}</a>
+                <a class="nav-link" href="{% url 'account_logout' %}">
+                  <i class="fas fa-sign-out-alt me-1"></i>{% translate "Sign Out" %}
+                </a>
               </li>
             {% else %}
               {% if ACCOUNT_ALLOW_REGISTRATION %}
                 <li class="nav-item">
                   {# URL provided by django-allauth/account/urls.py #}
-                  <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">{% translate "Sign Up" %}</a>
+                  <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">
+                    <i class="fas fa-user-plus me-1"></i>{% translate "Sign Up" %}
+                  </a>
                 </li>
               {% endif %}
               <li class="nav-item">
                 {# URL provided by django-allauth/account/urls.py #}
-                <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% translate "Sign In" %}</a>
+                <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">
+                  <i class="fas fa-sign-in-alt me-1"></i>{% translate "Sign In" %}
+                </a>
               </li>
             {% endif %}
           </ul>

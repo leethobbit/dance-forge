@@ -7,13 +7,24 @@ from django.urls import path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 
+from dance_forge.views import home
+from dance_forge.views import partials_about
+from dance_forge.views import partials_home
+from videos.views import partials_playlist_list
+from videos.views import partials_video_list
+
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+    path("", home, name="home"),
     path(
         "about/",
         TemplateView.as_view(template_name="pages/about.html"),
         name="about",
     ),
+    # HTMX partial views
+    path("partials/home/", partials_home, name="partials_home"),
+    path("partials/about/", partials_about, name="partials_about"),
+    path("partials/videos/", partials_video_list, name="partials_video_list"),
+    path("partials/playlists/", partials_playlist_list, name="partials_playlist_list"),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # User management

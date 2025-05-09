@@ -11,3 +11,156 @@
   background-color: #f2dede;
   border-color: #eed3d7;
 }
+
+/* Custom styles for Dance Forge with Vapor theme */
+
+/* Apply a subtle gradient background to the body */
+body {
+  background: linear-gradient(to bottom right, #0c0e14, #1a1d2d);
+  min-height: 100vh;
+  color: #fff;
+}
+
+/* Add glow effects to buttons */
+.btn-primary,
+.btn-success,
+.btn-info {
+  box-shadow: 0 0 15px rgba(113, 44, 249, 0.5);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover,
+.btn-success:hover,
+.btn-info:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(113, 44, 249, 0.7);
+}
+
+/* Card styling */
+.card {
+  background-color: rgba(26, 29, 45, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(113, 44, 249, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 25px rgba(113, 44, 249, 0.3);
+  transform: translateY(-5px);
+}
+
+/* Custom styling for the navbar */
+.navbar {
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+}
+
+.navbar-brand {
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* Video thumbnails */
+.img-thumbnail {
+  border: 2px solid rgba(113, 44, 249, 0.5);
+  box-shadow: 0 0 10px rgba(113, 44, 249, 0.3);
+}
+
+/* Modal styling */
+.modal-content {
+  background-color: #1a1d2d;
+  border: 1px solid rgba(113, 44, 249, 0.5);
+  box-shadow: 0 0 25px rgba(113, 44, 249, 0.7);
+}
+
+.modal-header,
+.modal-footer {
+  border-color: rgba(113, 44, 249, 0.3);
+}
+
+/* Custom animations */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.display-4 {
+  animation: pulse 5s infinite;
+}
+
+/* Neon text glow effect */
+.text-glow {
+  text-shadow: 0 0 10px rgba(113, 44, 249, 0.7),
+    0 0 20px rgba(113, 44, 249, 0.5),
+    0 0 30px rgba(113, 44, 249, 0.3);
+  color: #fff;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #a991f7;
+}
+
+/* Improve card text readability */
+.card-title {
+  color: #fff !important;
+  /* Override Bootstrap's text-dark class */
+  font-weight: 500;
+}
+
+.card a {
+  color: inherit;
+}
+
+.card a:hover {
+  text-decoration: none;
+}
+
+.card .text-muted {
+  color: #b8c7e0 !important;
+  /* Lighter color for better readability */
+}
+
+/* Recent videos section */
+.card-img-top {
+  transition: transform 0.3s ease;
+  border-bottom: 1px solid rgba(113, 44, 249, 0.3);
+}
+
+.card:hover .card-img-top {
+  transform: scale(1.05);
+}
+
+.bg-dark {
+  transition: all 0.3s ease;
+}
+
+.card:hover .bg-dark {
+  background-color: #2a2e45 !important;
+}
+
+/* Custom form styling */
+.form-control {
+  background-color: rgba(26, 29, 45, 0.8);
+  border: 1px solid rgba(113, 44, 249, 0.3);
+  color: #fff;
+}
+
+.form-control:focus {
+  background-color: rgba(26, 29, 45, 0.9);
+  border-color: rgba(113, 44, 249, 0.7);
+  box-shadow: 0 0 10px rgba(113, 44, 249, 0.5);
+}

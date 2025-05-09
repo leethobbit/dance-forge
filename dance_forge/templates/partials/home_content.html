@@ -1,0 +1,163 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+      <h1 class="display-4 text-glow">Welcome to Dance Forge</h1>
+      <p class="lead mt-4">Your platform for dance videos, tutorials, and performances.</p>
+      <hr class="my-4 border-secondary">
+      <p class="mb-4">Explore our collection of dance videos or upload your own to share with the community.</p>
+      <div class="mt-4 d-flex flex-wrap justify-content-center gap-2">
+        <a href="{% url 'video_list' %}" class="btn btn-primary btn-lg">
+          <i class="fas fa-film me-2"></i>Browse Videos
+        </a>
+        {% if user.is_authenticated %}
+        <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#newVideoModal">
+          <i class="fas fa-video me-2"></i>Upload Video
+        </button>
+        <button type="button" class="btn btn-info btn-lg" data-bs-toggle="modal" data-bs-target="#newPlaylistModal">
+          <i class="fas fa-list me-2"></i>Create Playlist
+        </button>
+        {% else %}
+        <a href="{% url 'account_login' %}" class="btn btn-outline-primary btn-lg">
+          <i class="fas fa-sign-in-alt me-2"></i>Sign in to Upload
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Videos Section -->
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-12">
+      <h2 class="text-glow mb-4">
+        <i class="fas fa-fire me-2"></i>Recently Uploaded
+      </h2>
+    </div>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+    {% for video in recent_videos %}
+    <div class="col">
+      <div class="card h-100">
+        <a href="{% url 'video_detail' video.pk %}" class="text-decoration-none">
+          {% if video.thumbnail %}
+          <img src="{{ video.thumbnail.url }}" class="card-img-top" alt="{{ video.title }}" style="height: 160px; object-fit: cover;">
+          {% else %}
+          <div class="bg-dark d-flex justify-content-center align-items-center" style="height: 160px;">
+            <i class="fas fa-video fa-3x text-light"></i>
+          </div>
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ video.title }}</h5>
+            <p class="card-text text-muted">
+              <small>
+                <i class="fas fa-user me-1"></i>{{ video.owner.username }}
+              </small>
+            </p>
+            <p class="card-text text-muted">
+              <small>
+                <i class="fas fa-eye me-1"></i>{{ video.view_count }} views • {{ video.created_at|timesince }} ago
+              </small>
+            </p>
+          </div>
+        </a>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body text-center">
+          <p class="card-text">No videos uploaded yet. Be the first to share your dance!</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% if user.is_authenticated %}
+<!-- New Video Modal -->
+<div class="modal fade" id="newVideoModal" tabindex="-1" aria-labelledby="newVideoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newVideoModalLabel">
+          <i class="fas fa-video me-2"></i>Upload New Video
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{% url 'video_create' %}" enctype="multipart/form-data" id="videoForm">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="id_title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="id_title" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="id_description" class="form-label">Description</label>
+            <textarea class="form-control" id="id_description" name="description" rows="3"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="id_file" class="form-label">Video File</label>
+            <input type="file" class="form-control" id="id_file" name="file" accept="video/*" required>
+            <div class="form-text">Supported formats: MP4, WebM, MOV. Max file size: 1GB</div>
+          </div>
+          <div class="mb-3">
+            <label for="id_thumbnail" class="form-label">Thumbnail (Optional)</label>
+            <input type="file" class="form-control" id="id_thumbnail" name="thumbnail" accept="image/*">
+            <div class="form-text">Recommended size: 1280×720 pixels. If not provided, a thumbnail will be generated from the video.</div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times me-2"></i>Cancel
+        </button>
+        <button type="button" class="btn btn-primary" onclick="document.getElementById('videoForm').submit();">
+          <i class="fas fa-upload me-2"></i>Upload
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- New Playlist Modal -->
+<div class="modal fade" id="newPlaylistModal" tabindex="-1" aria-labelledby="newPlaylistModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newPlaylistModalLabel">
+          <i class="fas fa-list me-2"></i>Create New Playlist
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{% url 'playlist_create' %}" id="playlistForm">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="id_name" class="form-label">Playlist Name</label>
+            <input type="text" class="form-control" id="id_name" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label for="id_description" class="form-label">Description</label>
+            <textarea class="form-control" id="id_description" name="description" rows="3"></textarea>
+          </div>
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="id_is_public" name="is_public" checked>
+            <label class="form-check-label" for="id_is_public">Make this playlist public</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times me-2"></i>Cancel
+        </button>
+        <button type="button" class="btn btn-primary" onclick="document.getElementById('playlistForm').submit();">
+          <i class="fas fa-save me-2"></i>Create Playlist
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %} 

@@ -22,4 +22,5 @@ urlpatterns = [
     path(
         "playlist/create/", views.PlaylistCreateView.as_view(), name="playlist_create"
     ),
+    path("playlists/", views.PlaylistListView.as_view(), name="playlist_list"),
 ]
