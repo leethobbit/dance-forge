@@ -17,7 +17,7 @@ django-crispy-forms==2.4  # https://github.com/django-crispy-forms/django-crispy
 crispy-bootstrap5==2025.4  # https://github.com/django-crispy-forms/crispy-bootstrap5
 django-redis==5.4.0  # https://github.com/jazzband/django-redis
 django-htmx==1.23.0  # https://github.com/htmx-org/django-htmx
-django-template-partials==24.4  # https://github.com/jazzband/django-template-partials
+django-template-partials==25.1  # https://github.com/jazzband/django-template-partials
 django-tables2==2.7.5  # https://github.com/jieter/django-tables2
 
 # Misc
